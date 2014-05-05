@@ -148,10 +148,17 @@ class TalkDetailView(
 
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
-        talk_form = forms.TalkRatingForm(request.POST or None,
+        if 'save' in request.POST:
+            talk_form = forms.TalkRatingForm(request.POST or None,
                                             instance=self.object)
-
-        if talk_form.is_valid():
-            talk_form.save()
+            if talk_form.is_valid():
+                talk_form.save()
+        
+        if 'move' in request.POST:
+            list_form = forms.TalkTalkListForm(request.POST or None,
+                                            instance=self.object,
+                                            user=request.user)
+            if list_form.is_valid():
+                list_form.save()
 
         return redirect(self.object)

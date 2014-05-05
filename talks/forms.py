@@ -71,3 +71,22 @@ class TalkRatingForm(forms.ModelForm):
                     Submit('save', 'Save', css_class='btn-primary')
                 )
             )
+
+class TalkTalkListForm(forms.ModelForm):
+    class Meta:
+        model = models.Talk
+        fields = {'talk_list',}
+
+        def __init__(self, *args, **kwargs):
+            super(TalkTalkListForm, self).__init__(*args, **kwargs)
+            self.fields['talk_list'].queryset = (
+                self.instance.talk_list.user.lists.all())
+
+            self.helper = FormHelper()
+            self.helper.layout = Layout(
+                'talk_list',
+                ButtonHolder(
+                    Submit('move', 'Move', css_class='btn-primary')
+                )
+            )
+

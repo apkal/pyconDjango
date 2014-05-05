@@ -3,6 +3,8 @@ from django.core.urlresolvers import reverse
 from django.db import models
 from django.template.defaultfilters import slugify
 
+import mistune
+
 class TalkList(models.Model):
     user = models.ForeignKey(User, related_name='lists')
     name = models.CharField(max_length=255)
@@ -35,6 +37,8 @@ class Talk(models.Model):
     host = models.CharField(max_length=255)
     talk_rating = models.IntegerField(blank=True, default=0)
     speaker_rating = models.IntegerField(blank=True, default=0)
+    notes = models.TextField(blank=True, default='')
+    notes_html = models.TextField(blank=True, default='', editable=False)
 
     class Meta:
         ordering = ('when', 'room')
@@ -45,8 +49,12 @@ class Talk(models.Model):
 
     def save(self, *args, **kwargs):
         self.slug = slugify(self.name)
+        self.notes_html = mistune.markdown(self.notes)
         super(Talk, self).save(*args, **kwargs)
-    
+
+    def get_absolute_url(self):
+        return reverse('talks:talks:detail', kwargs={'slug': self.slug})
+
     @property
     def overall_rating(self):
         if self.talk_rating and self.speaker_rating:

@@ -1,6 +1,7 @@
 {% extends '_layouts/base.html' %}
 {% load static from staticfiles %}
 {% load crispy_forms_tags %}
+{% load talks_tags %}
 
 {% block title %}{{ object.name }} | Talks | {{ block.super }}{% endblock title %}
 
@@ -14,12 +15,48 @@
 {% endblock headline %}
 
 {% block content %}
+    {% if object.notes_html %}
+    <div class="row">
+        <div class="col-sm-8">
+            <h3>Notes</h3>
+            {{ object.notes_html|safe }}
+        </div>
+        <div class="col-sm-4">
+            <div class="well">
+                <table class="table table-condensed">
+                    <thread>
+                        <tr>
+                            <th>Category</th>
+                            <th>Rating</th>
+                        </tr>
+                    </thread>
+                    <tbody>
+                        <tr>
+                            <th>Talk</th>
+                            <td>{% show_stars object.talk_rating %}</td>
+                        </tr>
+                        <tr>
+                            <th>Speaker</th>
+                            <td>{% show_stars object.speaker_rating %}</td>
+                        </tr>
+                        <tr>
+                            <th>Overall</th>
+                            <td>{% show_stars object.overall_rating %}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <hr>
+    {% endif %}
 
     <div class="row">
         <div class="col-sm-8">
             {% crispy rating_form %}
         </div>
         <div class="col-sm-4">
+            {% crispy list_form %}
             <p><a href="{{ object.talk_list.get_absolute_url }}">Back to list</a></p>
         </div>
     </div>
